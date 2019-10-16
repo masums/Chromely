@@ -1,48 +1,22 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RequestTaskRunner.cs" company="Chromely">
-//   Copyright (c) 2017-2018 Kola Oyewumi
+// <copyright file="RequestTaskRunner.cs" company="Chromely Projects">
+//   Copyright (c) 2017-2019 Chromely Projects
 // </copyright>
 // <license>
-// MIT License
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+//      See the LICENSE.md file in the project root for more information.
 // </license>
-// <note>
-// Chromely project is licensed under MIT License. CefGlue, CefSharp, Winapi may have additional licensing.
-// </note>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CefSharp;
+using Chromely.Core.Infrastructure;
+using Chromely.Core.RestfulService;
 
 // ReSharper disable StyleCop.SA1210
 namespace Chromely.CefSharp.Winapi.RestfulService
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Web;
-
-    using Chromely.Core.Infrastructure;
-    using Chromely.Core.RestfulService;
-
-    using global::CefSharp;
-
     /// <summary>
     /// The request task runner.
     /// </summary>
@@ -51,8 +25,11 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         /// <summary>
         /// The run async.
         /// </summary>
+        /// <param name="requestId">
+        /// The request identifier.
+        /// </param>
         /// <param name="routePath">
-        /// The route path.
+        /// The route routePath.
         /// </param>
         /// <param name="parameters">
         /// The parameters.
@@ -63,10 +40,10 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<ChromelyResponse> RunAsync(string routePath, object parameters, object postData)
+        public static Task<ChromelyResponse> RunAsync(string requestId, RoutePath routePath, object parameters, object postData)
         {
-            var response = new ChromelyResponse();
-            if (string.IsNullOrEmpty(routePath))
+            var response = new ChromelyResponse(requestId);
+            if (string.IsNullOrEmpty(routePath.Path))
             {
                 response.ReadyState = (int)ReadyState.ResponseIsReady;
                 response.Status = (int)System.Net.HttpStatusCode.BadRequest;
@@ -75,14 +52,13 @@ namespace Chromely.CefSharp.Winapi.RestfulService
                 return Task.FromResult(response);
             }
 
-            if (routePath.ToLower().Equals("/info"))
+            if (routePath.Path.ToLower().Equals("/info"))
             {
                 response = GetInfo();
                 return Task.FromResult(response);
             }
 
-            response = ExcuteRoute(routePath, parameters, postData);
-            return Task.FromResult(response);
+            return ExcuteRouteAsync(requestId, routePath, parameters, postData);
         }
 
         /// <summary>
@@ -99,7 +75,7 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         /// </exception>
         public static ChromelyResponse Run(IRequest request)
         {
-            bool isCustomScheme = UrlSchemeProvider.IsUrlOfRegisteredCustomScheme(request.Url);
+            var isCustomScheme = UrlSchemeProvider.IsUrlOfRegisteredCustomScheme(request.Url);
 
             if (!isCustomScheme)
             {
@@ -107,16 +83,20 @@ namespace Chromely.CefSharp.Winapi.RestfulService
             }
 
             var uri = new Uri(request.Url);
-            string routePath = uri.LocalPath;
-            var parameters = GetParameters(request.Url);
-            object postData = GetPostData(request);
+            var path = uri.LocalPath;
+            var parameters = request.Url.GetParameters();
+            var postData = GetPostData(request);
 
-            return Run(routePath, parameters, postData);
+            var routePath = new RoutePath(request.Method, path);
+            return Run(string.Empty, routePath, parameters, postData);
         }
 
         /// <summary>
         /// The run.
         /// </summary>
+        /// <param name="requestId">
+        /// The request identifier.
+        /// </param>
         /// <param name="routePath">
         /// The route path.
         /// </param>
@@ -129,10 +109,10 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         /// <returns>
         /// The <see cref="ChromelyResponse"/>.
         /// </returns>
-        public static ChromelyResponse Run(string routePath, object parameters, object postData)
+        public static ChromelyResponse Run(string requestId, RoutePath routePath, object parameters, object postData)
         {
-            var response = new ChromelyResponse();
-            if (string.IsNullOrEmpty(routePath))
+            var response = new ChromelyResponse(requestId);
+            if (string.IsNullOrEmpty(routePath.Path))
             {
                 response.ReadyState = (int)ReadyState.ResponseIsReady;
                 response.Status = (int)System.Net.HttpStatusCode.BadRequest;
@@ -141,17 +121,20 @@ namespace Chromely.CefSharp.Winapi.RestfulService
                 return response;
             }
 
-            if (routePath.ToLower().Equals("/info"))
+            if (routePath.Path.ToLower().Equals("/info"))
             {
                 return GetInfo();
             }
 
-            return ExcuteRoute(routePath, parameters, postData);
+            return ExcuteRoute(requestId, routePath, parameters, postData);
         }
 
         /// <summary>
         /// The excute route.
         /// </summary>
+        /// <param name="requestId">
+        /// The request identifier.
+        /// </param>
         /// <param name="routePath">
         /// The route path.
         /// </param>
@@ -167,7 +150,7 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         /// <exception cref="Exception">
         /// Generic exception - Route path not valid.
         /// </exception>
-        private static ChromelyResponse ExcuteRoute(string routePath, object parameters, object postData)
+        private static ChromelyResponse ExcuteRoute(string requestId, RoutePath routePath, object parameters, object postData)
         {
             var route = ServiceRouteProvider.GetRoute(routePath);
 
@@ -176,13 +159,82 @@ namespace Chromely.CefSharp.Winapi.RestfulService
                 throw new Exception($"Route for path = {routePath} is null or invalid.");
             }
 
-            var response = route.Invoke(routePath, parameters: parameters?.ToObjectDictionary(), postData: postData);
+            var response = route.Invoke(requestId, routePath, parameters?.ToObjectDictionary(), postData);
             response.ReadyState = (int)ReadyState.ResponseIsReady;
             response.Status = (int)System.Net.HttpStatusCode.OK;
             response.StatusText = "OK";
 
             return response;
         }
+
+        /// <summary>
+        /// The excute route async.
+        /// </summary>
+        /// <param name="requestId">
+        /// The request id.
+        /// </param>
+        /// <param name="routePath">
+        /// The route path.
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        /// <param name="postData">
+        /// The post data.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        private static async Task<ChromelyResponse> ExcuteRouteAsync(string requestId, RoutePath routePath, object parameters, object postData)
+        {
+            var route = ServiceRouteProvider.GetRoute(routePath);
+
+            if (route == null)
+            {
+                throw new Exception($"Route for path = {routePath} is null or invalid.");
+            }
+
+            ChromelyResponse response;
+
+            try
+            {
+                if (route.IsAsync)
+                {
+                    // ReSharper disable once ConsiderUsingConfigureAwait
+                    response = await route.InvokeAsync(
+                                   requestId,
+                                   routePath,
+                                   parameters?.ToObjectDictionary(),
+                                   postData);
+                }
+                else
+                {
+                    response = route.Invoke(
+                        requestId,
+                        routePath,
+                        parameters?.ToObjectDictionary(),
+                         postData);
+                }
+
+                response.ReadyState = (int) ReadyState.ResponseIsReady;
+                response.Status = (int) System.Net.HttpStatusCode.OK;
+                response.StatusText = "OK";
+
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception );
+                response = new ChromelyResponse
+                {
+                    ReadyState = (int)ReadyState.ResponseIsReady,
+                    Status = (int)System.Net.HttpStatusCode.InternalServerError,
+                    StatusText = "Error"
+                };
+            }
+
+            return response;
+        }
+
 
         /// <summary>
         /// The get info.
@@ -195,8 +247,7 @@ namespace Chromely.CefSharp.Winapi.RestfulService
             var response = new ChromelyResponse();
 
             var bitness = Environment.Is64BitProcess ? "x64" : "x86";
-            string chromeVersion =
-                $"Chromium: {Cef.ChromiumVersion}, CEF: {Cef.CefVersion}, CefSharp: {Cef.CefSharpVersion}, Environment: {bitness}";
+            var chromeVersion = $"Chromium: {Cef.ChromiumVersion}, CEF: {Cef.CefVersion}, CefSharp: {Cef.CefSharpVersion}, Environment: {bitness}";
 
             var infoItemDic = new Dictionary<string, string>
             {
@@ -220,35 +271,6 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         }
 
         /// <summary>
-        /// The get parameters.
-        /// </summary>
-        /// <param name="url">
-        /// The url.
-        /// </param>
-        /// <returns>
-        /// The name value collection.
-        /// </returns>
-        private static IDictionary<string, string> GetParameters(string url)
-        {
-            var nameValueCollection = new NameValueCollection();
-
-            var querystring = string.Empty;
-            var index = url.IndexOf('?');
-            if (index > 0)
-            {
-                querystring = url.Substring(url.IndexOf('?'));
-                nameValueCollection = HttpUtility.ParseQueryString(querystring);
-            }
-
-            if (string.IsNullOrEmpty(querystring))
-            {
-                return new Dictionary<string, string>();
-            }
-
-            return nameValueCollection.AllKeys.ToDictionary(x => x, x => nameValueCollection[x]);
-        }
-
-        /// <summary>
         /// The get post data.
         /// </summary>
         /// <param name="request">
@@ -260,7 +282,6 @@ namespace Chromely.CefSharp.Winapi.RestfulService
         private static string GetPostData(IRequest request)
         {
             var elements = request?.PostData?.Elements;
-
             if (elements == null || (elements.Count == 0))
             {
                 return string.Empty;

@@ -1,37 +1,17 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CefSharpContextMenuHandler.cs" company="Chromely">
-//   Copyright (c) 2017-2018 Kola Oyewumi
+// <copyright file="CefSharpContextMenuHandler.cs" company="Chromely Projects">
+//   Copyright (c) 2017-2019 Chromely Projects
 // </copyright>
 // <license>
-// MIT License
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+//      See the LICENSE.md file in the project root for more information.
 // </license>
-// <note>
-// Chromely project is licensed under MIT License. CefGlue, CefSharp, Winapi may have additional licensing.
-// </note>
-// --------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
+
+using global::CefSharp;
+using Chromely.Core;
 
 namespace Chromely.CefSharp.Winapi.Browser.Handlers
 {
-    using global::CefSharp;
-
     /// <summary>
     /// The CefSharp context menu handler.
     /// </summary>
@@ -46,6 +26,19 @@ namespace Chromely.CefSharp.Winapi.Browser.Handlers
         /// The close dev tools.
         /// </summary>
         private const int CloseDevTools = 26502;
+
+        /// <summary>
+        /// The debugging.
+        /// </summary>
+        private readonly bool debugging;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CefSharpContextMenuHandler"/> class.
+        /// </summary>
+        public CefSharpContextMenuHandler()
+        {
+            debugging = ChromelyConfiguration.Instance.DebuggingMode;
+        }
 
         /// <summary>
         /// The on before context menu.
@@ -72,11 +65,14 @@ namespace Chromely.CefSharp.Winapi.Browser.Handlers
 
             // Removing existing menu item
             // Remove "View Source" option
-            model.Remove(CefMenuCommand.ViewSource); 
+            model.Remove(CefMenuCommand.ViewSource);
 
-            // Add new custom menu items
-            model.AddItem((CefMenuCommand)ShowDevTools, "Show DevTools");
-            model.AddItem((CefMenuCommand)CloseDevTools, "Close DevTools");
+            if (debugging)
+            {
+                // Add new custom menu items
+                model.AddItem((CefMenuCommand)ShowDevTools, "Show DevTools");
+                model.AddItem((CefMenuCommand)CloseDevTools, "Close DevTools");
+            }
         }
 
         /// <summary>
@@ -105,14 +101,18 @@ namespace Chromely.CefSharp.Winapi.Browser.Handlers
         /// </returns>
         bool IContextMenuHandler.OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags)
         {
-            if ((int)commandId == ShowDevTools)
-            {
-                browser.ShowDevTools();
-            }
 
-            if ((int)commandId == CloseDevTools)
+            if (debugging)
             {
-                browser.CloseDevTools();
+                if ((int)commandId == ShowDevTools)
+                {
+                    browser.ShowDevTools();
+                }
+
+                if ((int)commandId == CloseDevTools)
+                {
+                    browser.CloseDevTools();
+                }
             }
 
             return false;

@@ -1,59 +1,107 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChromelyConfiguration.cs" company="Chromely">
-//   Copyright (c) 2017-2018 Kola Oyewumi
+// <copyright file="ChromelyConfiguration.cs" company="Chromely Projects">
+//   Copyright (c) 2017-2019 Chromely Projects
 // </copyright>
 // <license>
-// MIT License
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+//      See the LICENSE.md file in the project root for more information.
 // </license>
-// <note>
-// Chromely project is licensed under MIT License. CefGlue, CefSharp, Winapi may have additional licensing.
-// </note>
 // --------------------------------------------------------------------------------------------------------------------
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable MemberCanBeProtected.Global
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Reflection;
+using Chromely.Core.Helpers;
+using Chromely.Core.Host;
+using Chromely.Core.Infrastructure;
+using Chromely.Core.RestfulService;
 
 namespace Chromely.Core
 {
-    using System;
-    using System.Collections.Generic;
-    using Chromely.Core.Helpers;
-    using Chromely.Core.Infrastructure;
-
     /// <summary>
     /// The Chromely configuration.
     /// </summary>
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class ChromelyConfiguration
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChromelyConfiguration"/> class.
+        /// The instance.
         /// </summary>
-        public ChromelyConfiguration()
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1311:StaticReadonlyFieldsMustBeginWithUpperCaseLetter", Justification = "Reviewed. Suppression is OK here.")]
+        // ReSharper disable once InconsistentNaming
+        private static readonly ChromelyConfiguration instance = new ChromelyConfiguration();
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="ChromelyConfiguration"/> class from being created.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Reviewed. Suppression is OK here.")]
+        private ChromelyConfiguration()
         {
-            this.PerformDependencyCheck = false;
-            this.LogSeverity = LogSeverity.Warning;
-            this.LogFile = "logs\\chromely.cef.log";
-            this.HostWidth = 1200;
-            this.HostHeight = 900;
-            this.Locale = "en-US";
-            this.CommandLineArgs = new Dictionary<string, string>();
-            this.CustomSettings = new Dictionary<string, object>();
+            HostApi = ChromelyRuntime.DefaultHostApi;
+            LoadCefBinariesIfNotFound = true;
+            SilentCefBinariesLoading = false;
+            PerformDependencyCheck = false;
+            ShutdownCefOnExit = true;
+            LogSeverity = LogSeverity.Warning;
+            LogFile = Path.Combine("logs", "chromely.cef.log");
+            HostPlacement = new WindowPlacement();
+            HostCustomCreationStyle = null;
+            UseDefaultSubprocess = ChromelyRuntime.Platform == ChromelyPlatform.Windows;
+            Locale = "en-US";
+            StartWebSocket = false;
+            ServiceAssemblies = new List<ControllerAssemblyInfo>();
+            CommandLineArgs = new List<Tuple<string, string, bool>>();
+            CustomSettings = new Dictionary<string, object>();
+
+#if DEBUG
+            DebuggingMode = true;
+#endif
         }
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        public static ChromelyConfiguration Instance
+        {
+            // ReSharper disable once ArrangeAccessorOwnerBody
+            get
+            {
+                // ReSharper disable once ArrangeAccessorOwnerBody
+                return instance;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the desired host interface technology.
+        /// </summary>
+        public ChromelyHostApi HostApi { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether load cef binaries if not found.
+        /// </summary>
+        public bool LoadCefBinariesIfNotFound { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether silent cef binaries loading.
+        /// </summary>
+        public bool SilentCefBinariesLoading { get; set; }
+
+        /// <summary>
+        /// Gets or sets the window placement - X, Y, Width, Height, Center (or not)
+        /// </summary>
+        public WindowPlacement HostPlacement { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether use default subprocess.
+        /// </summary>
+        public bool UseDefaultSubprocess { get; set; }
 
         /// <summary>
         /// Gets or sets the host/window/app title.
@@ -61,24 +109,30 @@ namespace Chromely.Core
         public string HostTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the host/window/app width.
-        /// </summary>
-        public int HostWidth { get; set; }
-
-        /// <summary>
-        /// Gets or sets the host/window/app height.
-        /// </summary>
-        public int HostHeight { get; set; }
-
-        /// <summary>
         /// Gets or sets the host/window/app icon file.
         /// </summary>
         public string HostIconFile { get; set; }
 
         /// <summary>
+        /// Gets or sets the host custom creation style.
+        /// </summary>
+        public object HostCustomCreationStyle { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use host custom creation style.
+        /// </summary>
+        public bool UseHostCustomCreationStyle => HostCustomCreationStyle != null;
+
+        /// <summary>
         /// Gets or sets a value indicating whether CEF browser creation should perform dependency check.
         /// </summary>
         public bool PerformDependencyCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether CEF should be shutdown on application exit.
+        /// Default is true.
+        /// </summary>
+        public bool ShutdownCefOnExit { get; set; }
 
         /// <summary>
         /// Gets or sets the app args.
@@ -106,9 +160,36 @@ namespace Chromely.Core
         public string Locale { get; set; }
 
         /// <summary>
-        /// Gets or sets the command line args.
+        /// Gets or sets a value indicating whether start web socket.
         /// </summary>
-        public Dictionary<string, string> CommandLineArgs { get; set; }
+        public bool StartWebSocket { get; set; }
+
+        /// <summary>
+        /// Gets or sets the websocket address.
+        /// </summary>
+        public string WebsocketAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the websocket port.
+        /// </summary>
+        public int WebsocketPort { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether is debugging.
+        /// </summary>
+        public bool DebuggingMode { get; set; }
+
+        /// <summary>
+        /// Gets the service assemblies.
+        /// </summary>
+        public List<ControllerAssemblyInfo> ServiceAssemblies { get; }
+
+        /// <summary>
+        /// Gets or sets the command line args.
+        /// Tuple data:
+        /// Key = Item1; Value/Option=Item2; IsKeyValuePair = Item3.
+        /// </summary>
+        public List<Tuple<string, string, bool>> CommandLineArgs { get; set; }
 
         /// <summary>
         /// Gets or sets the custom settings.
@@ -131,7 +212,31 @@ namespace Chromely.Core
                 IoC.Container = container;
             }
 
-            return new ChromelyConfiguration();
+            EnsureExpectedWorkingDirectory();
+            switch (ChromelyRuntime.Platform)
+            {
+                case ChromelyPlatform.MacOSX:
+                    //TODO: check and define requirements for Mac OS - for now use linux settings
+                
+                case ChromelyPlatform.Linux:
+                    return Instance
+                        .WithCustomSetting(CefSettingKeys.MultiThreadedMessageLoop, false)
+                        .WithCustomSetting(CefSettingKeys.SingleProcess, true)
+                        .WithCustomSetting(CefSettingKeys.NoSandbox, true)
+
+                        .WithCommandLineArg("disable-extensions", "1")
+                        .WithCommandLineArg("disable-gpu", "1")
+                        .WithCommandLineArg("disable-gpu-compositing", "1")
+                        .WithCommandLineArg("disable-smooth-scrolling", "1")
+                        .WithCommandLineArg("no-sandbox", "1")
+                        .WithCommandLineArg("no-zygote", "1");
+
+                case ChromelyPlatform.Windows:
+                    return Instance;
+
+                default:
+                    throw new PlatformNotSupportedException();
+            }
         }
 
         /// <summary>
@@ -145,7 +250,37 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithAppArgs(string[] args)
         {
-            this.AppArgs = args;
+            AppArgs = args;
+            return this;
+        }
+
+        /// <summary>
+        /// The with loading cef binaries if not found.
+        /// </summary>
+        /// <param name="loadIfNotFound">
+        /// The load if not found.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public ChromelyConfiguration WithLoadingCefBinariesIfNotFound(bool loadIfNotFound)
+        {
+            LoadCefBinariesIfNotFound = loadIfNotFound;
+            return this;
+        }
+
+        /// <summary>
+        /// The with silent cef binaries loading.
+        /// </summary>
+        /// <param name="silentLoading">
+        /// The silent loading.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public ChromelyConfiguration WithSilentCefBinariesLoading(bool silentLoading)
+        {
+            SilentCefBinariesLoading = silentLoading;
             return this;
         }
 
@@ -160,7 +295,37 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithDependencyCheck(bool checkDependencies)
         {
-            this.PerformDependencyCheck = checkDependencies;
+            PerformDependencyCheck = checkDependencies;
+            return this;
+        }
+
+        /// <summary>
+        /// The with shutdown cef on exit.
+        /// </summary>
+        /// <param name="shutdownCefOnExitFlag">
+        /// The shutdown cef on exit flag.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public ChromelyConfiguration WithShutdownCefOnExit(bool shutdownCefOnExitFlag)
+        {
+            ShutdownCefOnExit = shutdownCefOnExitFlag;
+            return this;
+        }
+
+        /// <summary>
+        /// The with is debugging.
+        /// </summary>
+        /// <param name="debugging">
+        /// The is debugging.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public ChromelyConfiguration WithDebuggingMode(bool debugging)
+        {
+            DebuggingMode = debugging;
             return this;
         }
 
@@ -175,7 +340,81 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithStartUrl(string startUrl)
         {
-            this.StartUrl = startUrl;
+            StartUrl = startUrl;
+            return this;
+        }
+
+        /// <summary>
+        /// The with host mode.
+        /// </summary>
+        /// <param name="windowState">
+        /// The window state.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public ChromelyConfiguration WithHostMode(WindowState windowState)
+        {
+            if (HostPlacement == null)
+            {
+                throw new Exception("HostPlacement cannot be nul");
+            }
+
+            HostPlacement.State = windowState;
+            if (HostPlacement.KioskMode)
+            {
+                if (HostPlacement.State == WindowState.Normal)
+                {
+                    HostPlacement.Frameless = false;
+                }
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the hosting api to use to GTK
+        /// </summary>
+        /// <returns></returns>
+        public ChromelyConfiguration WithGtkHostApi()
+        {
+            HostApi = ChromelyHostApi.Gtk;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the hosting api to use to Libui
+        /// </summary>
+        /// <returns></returns>
+        public ChromelyConfiguration WithLibuiHostApi()
+        {
+            HostApi = ChromelyHostApi.Libui;
+            return this;
+        }
+
+        /// <summary>
+        /// The with default subprocess.
+        /// </summary>
+        /// <param name="useDefault">
+        /// The use default.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public ChromelyConfiguration WithDefaultSubprocess(bool useDefault = true)
+        {
+            UseDefaultSubprocess = useDefault;
+
+            if (useDefault)
+            {
+                // Disable security features
+                WithCommandLineArg("default-encoding", "utf-8");
+                WithCommandLineArg("allow-file-access-from-files");
+                WithCommandLineArg("allow-universal-access-from-files");
+                WithCommandLineArg("disable-web-security");
+                WithCommandLineArg("ignore-certificate-errors");
+            }
+
             return this;
         }
 
@@ -190,7 +429,7 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithHostTitle(string hostTitle)
         {
-            this.HostTitle = hostTitle;
+            HostTitle = hostTitle;
             return this;
         }
 
@@ -205,7 +444,7 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithHostIconFile(string hostIconFile)
         {
-            this.HostIconFile = hostIconFile;
+            HostIconFile = hostIconFile;
             return this;
         }
 
@@ -218,13 +457,61 @@ namespace Chromely.Core
         /// <param name="height">
         /// The height.
         /// </param>
+        /// <param name="left"></param>
+        /// <param name="top"></param>
         /// <returns>
         /// The <see cref="ChromelyConfiguration"/> object.
         /// </returns>
-        public ChromelyConfiguration WithHostSize(int width, int height)
+        public ChromelyConfiguration WithHostBounds(int width, int height, int left = 0, int top = 0)
         {
-            this.HostWidth = width;
-            this.HostHeight = height;
+            if (HostPlacement == null) HostPlacement = new WindowPlacement();
+            HostPlacement.Left = left;
+            HostPlacement.Top = top;
+            HostPlacement.Width = width;
+            HostPlacement.Height = height;
+            return this;
+        }
+
+        public ChromelyConfiguration WithHostFlag(HostFlagKey key, bool flag)
+        {
+            if (HostPlacement == null)
+            {
+                throw new Exception("HostPlacement cannot be null.");
+            }
+
+            switch (key)
+            {
+                case HostFlagKey.None:
+                    break;
+
+                case HostFlagKey.CenterScreen:
+                    HostPlacement.CenterScreen = flag;
+                    break;
+
+                case HostFlagKey.Frameless:
+                    HostPlacement.Frameless = flag;
+                    break;
+
+                case HostFlagKey.NoResize:
+                    HostPlacement.NoResize = flag;
+                    break;
+
+                case HostFlagKey.NoMinMaxBoxes:
+                    HostPlacement.NoMinMaxBoxes = flag;
+                    break;
+
+                case HostFlagKey.KioskMode:
+                    HostPlacement.KioskMode = flag;
+                    if (HostPlacement.KioskMode)
+                    {
+                        if (HostPlacement.State == WindowState.Normal)
+                        {
+                            HostPlacement.Frameless = false;
+                        }
+                    }
+                    break;
+            }
+
             return this;
         }
 
@@ -239,7 +526,7 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithLogSeverity(LogSeverity logSeverity)
         {
-            this.LogSeverity = logSeverity;
+            LogSeverity = logSeverity;
             return this;
         }
 
@@ -254,7 +541,7 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithLogFile(string logFile)
         {
-            this.LogFile = logFile;
+            LogFile = logFile;
             return this;
         }
 
@@ -269,7 +556,7 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithLocale(string locale)
         {
-            this.Locale = locale;
+            Locale = locale;
             return this;
         }
 
@@ -310,7 +597,7 @@ namespace Chromely.Core
         public ChromelyConfiguration UseDefaultResourceSchemeHandler(string schemeName, string domainName)
         {
             var handler = new ChromelySchemeHandler(schemeName, domainName, true, false);
-            this.RegisterSchemeHandler(handler);
+            RegisterSchemeHandler(handler);
 
             return this;
         }
@@ -330,26 +617,32 @@ namespace Chromely.Core
         public ChromelyConfiguration UseDefaultHttpSchemeHandler(string schemeName, string domainName)
         {
             var handler = new ChromelySchemeHandler(schemeName, domainName, false, true);
-            this.RegisterSchemeHandler(handler);
+            RegisterSchemeHandler(handler);
 
             return this;
         }
 
         /// <summary>
-        /// Sets use defaut Javascript object handler flag.
+        /// The use default websocket handler.
         /// </summary>
-        /// <param name="objectNameToBind">
-        /// The object name to bind.
+        /// <param name="address">
+        /// The address.
         /// </param>
-        /// <param name="registerAsync">
-        /// The register async.
+        /// <param name="port">
+        /// The port.
+        /// </param>
+        /// <param name="onLoadStartServer">
+        /// The onLoadStartServer.
         /// </param>
         /// <returns>
-        /// The <see cref="ChromelyConfiguration"/> object.
+        /// The <see cref="ChromelyConfiguration"/>.
         /// </returns>
-        public ChromelyConfiguration UseDefautJsHandler(string objectNameToBind, bool registerAsync)
+        public ChromelyConfiguration UseDefaultWebsocketHandler(string address, int port, bool onLoadStartServer)
         {
-            return this.RegisterJsHandler(new ChromelyJsHandler(objectNameToBind, registerAsync));
+            WebsocketAddress = address;
+            WebsocketPort = port;
+            StartWebSocket = onLoadStartServer;
+            return this;
         }
 
         /// <summary>
@@ -370,23 +663,50 @@ namespace Chromely.Core
         /// <summary>
         /// Registers a new command line argument.
         /// </summary>
+        /// <param name="option">
+        /// The command line option. Examples:
+        ///     .WithCommandLineArg("no-sandbox")
+        ///     .WithCommandLineArg("no-zygote")
+        /// Note that "--" is not required. 
+        /// This option to add command line switch is not implemented for CefSharp and will be ignored.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/> object.
+        /// </returns>
+        public ChromelyConfiguration WithCommandLineArg(string option)
+        {
+            if (CommandLineArgs == null)
+            {
+                CommandLineArgs = new List<Tuple<string, string, bool>>();
+            }
+
+            CommandLineArgs.Add(new Tuple<string, string, bool>(null, option, false));
+            return this;
+        }
+
+        /// <summary>
+        /// Registers a new command line argument.
+        /// </summary>
         /// <param name="nameKey">
         /// The key/name of argument.
         /// </param>
         /// <param name="value">
-        /// The value.
+        /// The command line option value. Examples:
+        ///     .WithCommandLineArg("no-sandbox", 1)
+        ///     .WithCommandLineArg("no-zygote", 1)
+        /// Note that "--" is not required.
         /// </param>
         /// <returns>
         /// The <see cref="ChromelyConfiguration"/> object.
         /// </returns>
         public ChromelyConfiguration WithCommandLineArg(string nameKey, string value)
         {
-            if (this.CommandLineArgs == null)
+            if (CommandLineArgs == null)
             {
-                this.CommandLineArgs = new Dictionary<string, string>();
+                CommandLineArgs = new List<Tuple<string, string, bool>>();
             }
 
-            this.CommandLineArgs[nameKey] = value;
+            CommandLineArgs.Add(new Tuple<string, string, bool>(nameKey, value, true));
             return this;
         }
 
@@ -404,17 +724,78 @@ namespace Chromely.Core
         /// </returns>
         public ChromelyConfiguration WithCustomSetting(string propertyName, object value)
         {
-            if (this.CustomSettings == null)
+            if (CustomSettings == null)
             {
-                this.CustomSettings = new Dictionary<string, object>();
+                CustomSettings = new Dictionary<string, object>();
             }
 
-            this.CustomSettings[propertyName] = value;
+            CustomSettings[propertyName] = value;
+            return this;
+        }
+
+
+        /// <summary>
+        /// Registers service assembly.
+        /// </summary>
+        /// <param name="filename">
+        /// The filename.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/> object.
+        /// </returns>
+        public ChromelyConfiguration RegisterServiceAssembly(string filename)
+        {
+            ServiceAssemblies?.RegisterServiceAssembly(Assembly.LoadFile(filename));
             return this;
         }
 
         /// <summary>
-        /// Registers customr url scheme.
+        /// Registers service assembly.
+        /// </summary>
+        /// <param name="assembly">
+        /// The assembly.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/> object.
+        /// </returns>
+        public ChromelyConfiguration RegisterServiceAssembly(Assembly assembly)
+        {
+            ServiceAssemblies?.RegisterServiceAssembly(assembly);
+            return this;
+        }
+
+        /// <summary>
+        /// Registers service assemblies.
+        /// </summary>
+        /// <param name="folder">
+        /// The folder.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/> object.
+        /// </returns>
+        public ChromelyConfiguration RegisterServiceAssemblies(string folder)
+        {
+            ServiceAssemblies?.RegisterServiceAssemblies(folder);
+            return this;
+        }
+
+        /// <summary>
+        /// Registers service assemblies.
+        /// </summary>
+        /// <param name="fileNames">
+        /// The file names.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/> object.
+        /// </returns>
+        public ChromelyConfiguration RegisterServiceAssemblies(List<string> fileNames)
+        {
+            ServiceAssemblies?.RegisterServiceAssemblies(fileNames);
+            return this;
+        }
+
+        /// <summary>
+        /// Registers customer url scheme.
         /// </summary>
         /// <param name="schemeName">
         /// The scheme name.
@@ -425,10 +806,25 @@ namespace Chromely.Core
         /// <returns>
         /// The <see cref="ChromelyConfiguration"/> object.
         /// </returns>
-        public virtual ChromelyConfiguration RegisterCustomrUrlScheme(string schemeName, string domainName)
+        public virtual ChromelyConfiguration RegisterCustomerUrlScheme(string schemeName, string domainName)
         {
-            UrlScheme scheme = new UrlScheme(schemeName, domainName, false);
+            var scheme = new UrlScheme(schemeName, domainName, UrlSchemeType.Custom);
             UrlSchemeProvider.RegisterScheme(scheme);
+            return this;
+        }
+
+        /// <summary>
+        /// Registers customer url scheme.
+        /// </summary>
+        /// <param name="urlScheme">
+        /// The url scheme object.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/> object.
+        /// </returns>
+        public virtual ChromelyConfiguration RegisterCustomerUrlScheme(UrlScheme urlScheme)
+        {
+            UrlSchemeProvider.RegisterScheme(urlScheme);
             return this;
         }
 
@@ -446,8 +842,48 @@ namespace Chromely.Core
         /// </returns>
         public virtual ChromelyConfiguration RegisterExternalUrlScheme(string schemeName, string domainName)
         {
-            var scheme = new UrlScheme(schemeName, domainName, true);
+            var scheme = new UrlScheme(schemeName, domainName, UrlSchemeType.External);
             UrlSchemeProvider.RegisterScheme(scheme);
+            return this;
+        }
+
+        /// <summary>
+        /// The register event handler.
+        /// </summary>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="handler">
+        /// The handler.
+        /// </param>
+        /// <typeparam name="T">
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public virtual ChromelyConfiguration RegisterEventHandler<T>(CefEventKey key, EventHandler<T> handler)
+        {
+            return RegisterEventHandler(key, new ChromelyEventHandler<T>(key, handler));
+        }
+
+        /// <summary>
+        /// The register event handler.
+        /// </summary>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="handler">
+        /// The handler.
+        /// </param>
+        /// <typeparam name="T">
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="ChromelyConfiguration"/>.
+        /// </returns>
+        public virtual ChromelyConfiguration RegisterEventHandler<T>(CefEventKey key, ChromelyEventHandler<T> handler)
+        {
+            var service = CefEventHandlerFakeTypes.GetHandlerType(key);
+            IoC.RegisterInstance(service, handler.Key, handler);
             return this;
         }
 
@@ -465,7 +901,7 @@ namespace Chromely.Core
         /// </returns>
         public virtual ChromelyConfiguration RegisterCustomHandler(CefHandlerKey key, Type implementation)
         {
-            var service = CefHandlerFakeTypes.GetHandlerType(key);
+            var service = CefCustomHandlerFakeTypes.GetHandlerType(key);
             var keyStr = key.EnumToString();
             IoC.RegisterPerRequest(service, keyStr, implementation);
 
@@ -489,103 +925,48 @@ namespace Chromely.Core
         /// </returns>
         public virtual ChromelyConfiguration RegisterSchemeHandler(string schemeName, string domainName, object handler)
         {
-            return this.RegisterSchemeHandler(new ChromelySchemeHandler(schemeName, domainName, handler));
+            return RegisterSchemeHandler(new ChromelySchemeHandler(schemeName, domainName, handler));
         }
 
         /// <summary>
         /// Registers scheme handler.
         /// </summary>
-        /// <param name="chromelySchemeHandler">
+        /// <param name="schemeHandler">
         /// The chromely scheme handler.
         /// </param>
         /// <returns>
         /// The <see cref="ChromelyConfiguration"/> object.
         /// </returns>
-        public virtual ChromelyConfiguration RegisterSchemeHandler(ChromelySchemeHandler chromelySchemeHandler)
+        public virtual ChromelyConfiguration RegisterSchemeHandler(ChromelySchemeHandler schemeHandler)
         {
-            if (chromelySchemeHandler != null)
+            if (schemeHandler != null)
             {
-                var scheme = new UrlScheme(chromelySchemeHandler.SchemeName, chromelySchemeHandler.DomainName, false);
+                var scheme = new UrlScheme(schemeHandler.SchemeName, schemeHandler.DomainName, UrlSchemeType.Custom);
                 UrlSchemeProvider.RegisterScheme(scheme);
-                IoC.RegisterInstance(typeof(ChromelySchemeHandler), chromelySchemeHandler.Key, chromelySchemeHandler);
+                IoC.RegisterInstance(typeof(ChromelySchemeHandler), schemeHandler.Key, schemeHandler);
             }
 
             return this;
         }
 
         /// <summary>
-        /// Registers Javascript object handler.
+        /// Using local resource handling requires files to be relative to the 
+        /// Expected working directory
+        /// For example, if the app is launched via the taskbar the working directory gets changed to
+        /// C:\Windows\system32
+        /// This needs to be changed to the right one.
         /// </summary>
-        /// <param name="jsMethod">
-        /// The js method.
-        /// </param>
-        /// <param name="boundObject">
-        /// The bound object.
-        /// </param>
-        /// <param name="boundingOptions">
-        /// The bounding options.
-        /// </param>
-        /// <param name="registerAsync">
-        /// The register async.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChromelyConfiguration"/> object.
-        /// </returns>
-        public virtual ChromelyConfiguration RegisterJsHandler(string jsMethod, object boundObject, object boundingOptions, bool registerAsync)
+        private static void EnsureExpectedWorkingDirectory()
         {
-            return this.RegisterJsHandler(new ChromelyJsHandler(jsMethod, boundObject, boundingOptions, registerAsync));
-        }
-
-        /// <summary>
-        /// Registers Javascript object handler.
-        /// </summary>
-        /// <param name="chromelyJsHandler">
-        /// The chromely js handler.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChromelyConfiguration"/> object.
-        /// </returns>
-        public virtual ChromelyConfiguration RegisterJsHandler(ChromelyJsHandler chromelyJsHandler)
-        {
-            if (chromelyJsHandler != null)
+           try
             {
-                IoC.RegisterInstance(typeof(ChromelyJsHandler), chromelyJsHandler.Key, chromelyJsHandler);
+                var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                 Directory.SetCurrentDirectory(appDirectory);
             }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Registers message router handler.
-        /// </summary>
-        /// <param name="chromelyMesssageRouterHandler">
-        /// The chromely messsage router handler.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChromelyConfiguration"/> object.
-        /// </returns>
-        public virtual ChromelyConfiguration RegisterMessageRouterHandler(object chromelyMesssageRouterHandler)
-        {
-            return this.RegisterMessageRouterHandler(new ChromelyMesssageRouter(chromelyMesssageRouterHandler));
-        }
-
-        /// <summary>
-        /// Registers message router handler.
-        /// </summary>
-        /// <param name="chromelyMesssageRouter">
-        /// The chromely messsage router.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ChromelyConfiguration"/> object.
-        /// </returns>
-        public virtual ChromelyConfiguration RegisterMessageRouterHandler(ChromelyMesssageRouter chromelyMesssageRouter)
-        {
-            if (chromelyMesssageRouter != null)
+            catch (Exception exception)
             {
-                IoC.RegisterInstance(typeof(ChromelyMesssageRouter), chromelyMesssageRouter.Key, chromelyMesssageRouter);
+                Log.Error(exception);
             }
-
-            return this;
         }
     }
 }

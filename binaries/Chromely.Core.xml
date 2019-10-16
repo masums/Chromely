@@ -9,9 +9,29 @@
             The Chromely configuration.
             </summary>
         </member>
+        <member name="F:Chromely.Core.ChromelyConfiguration.instance">
+            <summary>
+            The instance.
+            </summary>
+        </member>
         <member name="M:Chromely.Core.ChromelyConfiguration.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyConfiguration"/> class.
+            Prevents a default instance of the <see cref="T:Chromely.Core.ChromelyConfiguration"/> class from being created.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.Instance">
+            <summary>
+            Gets the instance.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.HostState">
+            <summary>
+            Gets or sets the host state.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.HostCenterScreen">
+            <summary>
+            Gets or sets a value indicating whether host center screen.
             </summary>
         </member>
         <member name="P:Chromely.Core.ChromelyConfiguration.HostTitle">
@@ -39,6 +59,12 @@
             Gets or sets a value indicating whether CEF browser creation should perform dependency check.
             </summary>
         </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.ShutdownCefOnExit">
+            <summary>
+            Gets or sets a value indicating whether CEF should be shutdown on application exit.
+            Default is true.
+            </summary>
+        </member>
         <member name="P:Chromely.Core.ChromelyConfiguration.AppArgs">
             <summary>
             Gets or sets the app args.
@@ -62,6 +88,31 @@
         <member name="P:Chromely.Core.ChromelyConfiguration.Locale">
             <summary>
             Gets or sets the locale.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.StartWebSocket">
+            <summary>
+            Gets or sets a value indicating whether start web socket.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.WebsocketAddress">
+            <summary>
+            Gets or sets the websocket address.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.WebsocketPort">
+            <summary>
+            Gets or sets the websocket port.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.DebuggingMode">
+            <summary>
+            Gets or sets a value indicating whether is debugging.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyConfiguration.ServiceAssemblies">
+            <summary>
+            Gets the service assemblies.
             </summary>
         </member>
         <member name="P:Chromely.Core.ChromelyConfiguration.CommandLineArgs">
@@ -107,6 +158,28 @@
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
             </returns>
         </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.WithShutdownCefOnExit(System.Boolean)">
+            <summary>
+            The with shutdown cef on exit.
+            </summary>
+            <param name="shutdownCefOnExitFlag">
+            The shutdown cef on exit flag.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.WithDebuggingMode(System.Boolean)">
+            <summary>
+            The with is debugging.
+            </summary>
+            <param name="debugging">
+            The isdebugging.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
+            </returns>
+        </member>
         <member name="M:Chromely.Core.ChromelyConfiguration.WithStartUrl(System.String)">
             <summary>
             Sets start url.
@@ -116,6 +189,20 @@
             </param>
             <returns>
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.WithHostMode(Chromely.Core.Host.WindowState,System.Boolean)">
+            <summary>
+            The with host mode.
+            </summary>
+            <param name="windowState">
+            The window state.
+            </param>
+            <param name="centerScreen">
+            The center screen.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
             </returns>
         </member>
         <member name="M:Chromely.Core.ChromelyConfiguration.WithHostTitle(System.String)">
@@ -246,6 +333,23 @@
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
             </returns>
         </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.UseDefaultWebsocketHandler(System.String,System.Int32,System.Boolean)">
+            <summary>
+            The use default websocket handler.
+            </summary>
+            <param name="address">
+            The address.
+            </param>
+            <param name="port">
+            The port.
+            </param>
+            <param name="onloadstartserver">
+            The onloadstartserver.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
+            </returns>
+        </member>
         <member name="M:Chromely.Core.ChromelyConfiguration.WithLogger(Chromely.Core.IChromelyLogger)">
             <summary>
             Sets with logger object to use. Should be of type <see cref="T:Chromely.Core.IChromelyLogger"/>
@@ -285,6 +389,50 @@
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
             </returns>
         </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterServiceAssembly(System.String)">
+            <summary>
+            Registers service assembly.
+            </summary>
+            <param name="filename">
+            The filename.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterServiceAssembly(System.Reflection.Assembly)">
+            <summary>
+            Registers service assembly.
+            </summary>
+            <param name="assembly">
+            The assembly.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterServiceAssemblies(System.String)">
+            <summary>
+            Registers service assemblies.
+            </summary>
+            <param name="folder">
+            The folder.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterServiceAssemblies(System.Collections.Generic.List{System.String})">
+            <summary>
+            Registers service assemblies.
+            </summary>
+            <param name="filenames">
+            The filenames.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
         <member name="M:Chromely.Core.ChromelyConfiguration.RegisterCustomrUrlScheme(System.String,System.String)">
             <summary>
             Registers customr url scheme.
@@ -294,6 +442,17 @@
             </param>
             <param name="domainName">
             The domain name.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterCustomrUrlScheme(Chromely.Core.Infrastructure.UrlScheme)">
+            <summary>
+            Registers customr url scheme.
+            </summary>
+            <param name="urlScheme">
+            The url scheme object.
             </param>
             <returns>
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
@@ -311,6 +470,38 @@
             </param>
             <returns>
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterEventHandler``1(Chromely.Core.Helpers.CefEventKey,System.EventHandler{``0})">
+            <summary>
+            The register event handler.
+            </summary>
+            <param name="key">
+            The key.
+            </param>
+            <param name="handler">
+            The handler.
+            </param>
+            <typeparam name="T">
+            </typeparam>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterEventHandler``1(Chromely.Core.Helpers.CefEventKey,Chromely.Core.ChromelyEventHandler{``0})">
+            <summary>
+            The register event handler.
+            </summary>
+            <param name="key">
+            The key.
+            </param>
+            <param name="handler">
+            The handler.
+            </param>
+            <typeparam name="T">
+            </typeparam>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
             </returns>
         </member>
         <member name="M:Chromely.Core.ChromelyConfiguration.RegisterCustomHandler(Chromely.Core.Helpers.CefHandlerKey,System.Type)">
@@ -348,7 +539,7 @@
             <summary>
             Registers scheme handler.
             </summary>
-            <param name="chromelySchemeHandler">
+            <param name="schemeHandler">
             The chromely scheme handler.
             </param>
             <returns>
@@ -359,8 +550,8 @@
             <summary>
             Registers Javascript object handler.
             </summary>
-            <param name="jsMethod">
-            The js method.
+            <param name="javascriptMethod">
+            The javascrpt method.
             </param>
             <param name="boundObject">
             The bound object.
@@ -390,22 +581,42 @@
             <summary>
             Registers message router handler.
             </summary>
-            <param name="chromelyMesssageRouterHandler">
+            <param name="messageRouterHandler">
             The chromely messsage router handler.
             </param>
             <returns>
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
             </returns>
         </member>
-        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterMessageRouterHandler(Chromely.Core.ChromelyMesssageRouter)">
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterMessageRouterHandler(Chromely.Core.ChromelyMessageRouter)">
             <summary>
             Registers message router handler.
             </summary>
-            <param name="chromelyMesssageRouter">
+            <param name="messageRouterHandler">
             The chromely messsage router.
             </param>
             <returns>
             The <see cref="T:Chromely.Core.ChromelyConfiguration"/> object.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.ChromelyConfiguration.RegisterWebsocketHandler(Chromely.Core.IChromelyWebsocketHandler,System.String,System.Int32,System.Boolean)">
+            <summary>
+            The register websocket handler.
+            </summary>
+            <param name="sockeHandler">
+            The socke handler.
+            </param>
+            <param name="address">
+            The address.
+            </param>
+            <param name="port">
+            The port.
+            </param>
+            <param name="onloadstartserver">
+            The onloadstartserver.
+            </param>
+            <returns>
+            The <see cref="T:Chromely.Core.ChromelyConfiguration"/>.
             </returns>
         </member>
         <member name="T:Chromely.Core.ChromelyConfigurationExtension">
@@ -463,6 +674,50 @@
             <returns>
             The <see cref="T:System.Int32"/> value.
             </returns>
+        </member>
+        <member name="T:Chromely.Core.ChromelyEventHandler`1">
+            <summary>
+            The chromely event handler.
+            </summary>
+            <typeparam name="T">
+            </typeparam>
+        </member>
+        <member name="M:Chromely.Core.ChromelyEventHandler`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyEventHandler`1"/> class. 
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.ChromelyEventHandler`1.#ctor(Chromely.Core.Helpers.CefEventKey,System.EventHandler{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyEventHandler`1"/> class.
+            </summary>
+            <param name="eventKey">
+            The event key.
+            </param>
+            <param name="handler">
+            The handler.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.ChromelyEventHandler`1.#ctor(System.String,System.EventHandler{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyEventHandler`1"/> class.
+            </summary>
+            <param name="key">
+            The key.
+            </param>
+            <param name="handler">
+            The handler.
+            </param>
+        </member>
+        <member name="P:Chromely.Core.ChromelyEventHandler`1.Key">
+            <summary>
+            Gets the key.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.ChromelyEventHandler`1.Handler">
+            <summary>
+            Gets or sets the handler.
+            </summary>
         </member>
         <member name="T:Chromely.Core.ChromelyJsHandler">
             <summary>
@@ -534,32 +789,32 @@
             Gets or sets a value indicating whether use default.
             </summary>
         </member>
-        <member name="T:Chromely.Core.ChromelyMesssageRouter">
+        <member name="T:Chromely.Core.ChromelyMessageRouter">
             <summary>
             The chromely messsage router.
             Registers MessageRouter handler -
             https://bitbucket.org/chromiumembedded/cef/wiki/GeneralUsage.md#markdown-header-generic-message-router
             </summary>
         </member>
-        <member name="M:Chromely.Core.ChromelyMesssageRouter.#ctor">
+        <member name="M:Chromely.Core.ChromelyMessageRouter.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyMesssageRouter"/> class.
+            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyMessageRouter"/> class.
             </summary>
         </member>
-        <member name="M:Chromely.Core.ChromelyMesssageRouter.#ctor(System.Object)">
+        <member name="M:Chromely.Core.ChromelyMessageRouter.#ctor(System.Object)">
             <summary>
-            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyMesssageRouter"/> class.
+            Initializes a new instance of the <see cref="T:Chromely.Core.ChromelyMessageRouter"/> class.
             </summary>
             <param name="handler">
             The handler.
             </param>
         </member>
-        <member name="P:Chromely.Core.ChromelyMesssageRouter.Key">
+        <member name="P:Chromely.Core.ChromelyMessageRouter.Key">
             <summary>
             Gets the key.
             </summary>
         </member>
-        <member name="P:Chromely.Core.ChromelyMesssageRouter.Handler">
+        <member name="P:Chromely.Core.ChromelyMessageRouter.Handler">
             <summary>
             Gets or sets the handler.
             </summary>
@@ -662,81 +917,76 @@
             Gets or sets the handler factory.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes">
             <summary>
             The cef handler dummy types.
             The class holds a set of dummy handler interfaces as keys for registering handlers.
             This allow of the keys to be used for both CefSharp and CefGlue implementations.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.ILifeSpanHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.ILifeSpanHandler">
             <summary>
             The LifeSpanHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.ILoadHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.ILoadHandler">
             <summary>
             The LoadHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IRequestHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IRequestHandler">
             <summary>
             The RequestHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IDisplayHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IDisplayHandler">
             <summary>
             The DisplayHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IContextMenuHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IContextMenuHandler">
             <summary>
             The ContextMenuHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IFocusHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IFocusHandler">
             <summary>
             The FocusHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IKeyboardHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IKeyboardHandler">
             <summary>
             The KeyboardHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IJsDialogHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IJsDialogHandler">
             <summary>
             The JsDialogHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IDialogHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IDialogHandler">
             <summary>
             The DialogHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IDragHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IDragHandler">
             <summary>
             The DragHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IGeolocationHandler">
-            <summary>
-            The GeolocationHandler interface.
-            </summary>
-        </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IDownloadHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IDownloadHandler">
             <summary>
             The DownloadHandler interface.
             </summary>
         </member>
-        <member name="T:Chromely.Core.Helpers.CefHandlerFakeTypes.IFindHandler">
+        <member name="T:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.IFindHandler">
             <summary>
             The FindHandler interface.
             </summary>
         </member>
-        <member name="M:Chromely.Core.Helpers.CefHandlerFakeTypes.GetHandlerType(Chromely.Core.Helpers.CefHandlerKey)">
+        <member name="M:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.GetHandlerType(Chromely.Core.Helpers.CefHandlerKey)">
             <summary>
-            The get handler type.
+            The get custom handler type.
             </summary>
             <param name="key">
             The key.
@@ -745,13 +995,189 @@
             The <see cref="T:System.Type"/>.
             </returns>
         </member>
-        <member name="M:Chromely.Core.Helpers.CefHandlerFakeTypes.GetAllHandlerKeys">
+        <member name="M:Chromely.Core.Helpers.CefCustomHandlerFakeTypes.GetAllCustomHandlerKeys">
             <summary>
             The get all handler keys.
             </summary>
             <returns>
             The <see cref="T:System.Collections.IList"/>.
             </returns>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes">
+            <summary>
+            The cef handler dummy types.
+            The class holds a set of dummy handler interfaces as keys for registering handlers.
+            This allow of the keys to be used for both CefSharp and CefGlue implementations.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.INoneHandler">
+            <summary>
+            The None interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IFrameLoadStartHandler">
+            <summary>
+            The FrameLoadStart interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IAddressChangedHandler">
+            <summary>
+            The AddressChanged interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.ITitleChangedHandler">
+            <summary>
+            The TitleChanged interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IFrameLoadEndHandler">
+            <summary>
+            The FrameLoadEnd interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.ILoadingStateChangedHandler">
+            <summary>
+            The LoadingStateChanged interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IConsoleMessageHandler">
+            <summary>
+            The ConsoleMessage interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IStatusMessageHandler">
+            <summary>
+            The StatusMessageHandler interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.ILoadErrorHandler">
+            <summary>
+            The LoadError interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.ITooltipChangedHandler">
+            <summary>
+            The TooltipChangedHandler interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IBeforeCloseHandler">
+            <summary>
+            The BeforeCloseHandler interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IBeforePopupHandler">
+            <summary>
+            The BeforePopupHandler interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IPluginCrashedHandler">
+            <summary>
+            The PluginCrashedHandler interface.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventHandlerFakeTypes.IRenderProcessTerminatedHandler">
+            <summary>
+            The RenderProcessTerminatedHandler interface.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.Helpers.CefEventHandlerFakeTypes.GetHandlerType(Chromely.Core.Helpers.CefEventKey)">
+            <summary>
+            The get custom handler type.
+            </summary>
+            <param name="key">
+            The key.
+            </param>
+            <returns>
+            The <see cref="T:System.Type"/>.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.Helpers.CefEventHandlerFakeTypes.GetAllEventHandlerKeys">
+            <summary>
+            The get all event handler keys.
+            </summary>
+            <returns>
+            The <see cref="T:System.Collections.IList"/>.
+            </returns>
+        </member>
+        <member name="T:Chromely.Core.Helpers.CefEventKey">
+            <summary>
+            The cef event key.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.None">
+            <summary>
+            The none.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.FrameLoadStart">
+            <summary>
+            The frame load start.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.AddressChanged">
+            <summary>
+            The address changed.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.TitleChanged">
+            <summary>
+            The title changed.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.FrameLoadEnd">
+            <summary>
+            The frame load end.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.LoadingStateChanged">
+            <summary>
+            The loading state changed.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.ConsoleMessage">
+            <summary>
+            The console message.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.StatusMessage">
+            <summary>
+            The status message.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.LoadError">
+            <summary>
+            The load error.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.TooltipChanged">
+            <summary>
+            The tooltip changed.
+            For CefGlue apps only.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.BeforeClose">
+            <summary>
+            The before close.
+            For CefGlue apps only.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.BeforePopup">
+            <summary>
+            The before popup.
+            For CefGlue apps only.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.PluginCrashed">
+            <summary>
+            The plugin crashed.
+            For CefGlue apps only.
+            </summary>
+        </member>
+        <member name="F:Chromely.Core.Helpers.CefEventKey.RenderProcessTerminated">
+            <summary>
+            The render process terminated.
+            For CefGlue apps only.
+            </summary>
         </member>
         <member name="T:Chromely.Core.Helpers.CefHandlerKey">
             <summary>
@@ -811,11 +1237,6 @@
         <member name="F:Chromely.Core.Helpers.CefHandlerKey.DragHandler">
             <summary>
             The drag handler.
-            </summary>
-        </member>
-        <member name="F:Chromely.Core.Helpers.CefHandlerKey.GeolocationHandler">
-            <summary>
-            The geolocation handler.
             </summary>
         </member>
         <member name="F:Chromely.Core.Helpers.CefHandlerKey.DownloadHandler">
@@ -1050,6 +1471,17 @@
             The <see cref="T:System.String"/>.
             </returns>
         </member>
+        <member name="M:Chromely.Core.Helpers.ValueConvertersExtension.EnumToString(Chromely.Core.Helpers.CefEventKey)">
+            <summary>
+            The enum to string.
+            </summary>
+            <param name="key">
+            The key.
+            </param>
+            <returns>
+            The <see cref="T:System.String"/>.
+            </returns>
+        </member>
         <member name="M:Chromely.Core.Helpers.ValueConvertersExtension.ToEnum``1(System.String)">
             <summary>
             The to enum.
@@ -1064,52 +1496,75 @@
             The enum to return.
             </returns>
         </member>
-        <member name="T:Chromely.Core.Host.IChromelyHost">
+        <member name="T:Chromely.Core.Host.IChromelyWindow">
             <summary>
-            The ChromelyHost interface.
+            The IChromelyWindow interface.
             </summary>
         </member>
-        <member name="P:Chromely.Core.Host.IChromelyHost.HostConfig">
+        <member name="P:Chromely.Core.Host.IChromelyWindow.HostConfig">
             <summary>
             Gets the host config.
             </summary>
         </member>
-        <member name="M:Chromely.Core.Host.IChromelyHost.RegisterSchemeHandlers">
+        <member name="P:Chromely.Core.Host.IChromelyWindow.Browser">
             <summary>
-            The register scheme handlers.
+            Gets the browser.
             </summary>
         </member>
-        <member name="M:Chromely.Core.Host.IChromelyHost.RegisterMessageRouters">
+        <member name="M:Chromely.Core.Host.IChromelyWindow.Run(System.String[])">
             <summary>
-            The register message routers.
+            The run.
             </summary>
+            <param name="args">
+            The args.
+            </param>
+            <returns>
+            The <see cref="T:System.Int32"/>.
+            </returns>
         </member>
-        <member name="T:Chromely.Core.Host.WebBrowserBase">
+        <member name="M:Chromely.Core.Host.IChromelyWindow.RegisterEventHandler``1(Chromely.Core.Helpers.CefEventKey,System.EventHandler{``0})">
             <summary>
-            The web browser base.
+            The register event handler.
+            The event handler must be registered before calling "Run".
+            Alternatively this can be done before window is created during ChromelyConfiguration instantiation.
+            Only one type of event handler can be registered. The first one is valid, consequent registrations will be ignored.
             </summary>
+            <param name="key">
+            The key.
+            </param>
+            <param name="handler">
+            The handler.
+            </param>
+            <typeparam name="T">
+            This is the event argument classe - e,g - LoadErrorEventArgs, FrameLoadStartEventArgs. 
+            </typeparam>
         </member>
-        <member name="F:Chromely.Core.Host.WebBrowserBase.mDisposed">
+        <member name="M:Chromely.Core.Host.IChromelyWindow.RegisterEventHandler``1(Chromely.Core.Helpers.CefEventKey,Chromely.Core.ChromelyEventHandler{``0})">
             <summary>
-            The disposed flag.
+            The register event handler.
             </summary>
+            <param name="key">
+            The key.
+            </param>
+            <param name="handler">
+            The handler.
+            </param>
+            <typeparam name="T">
+            This is the event argument classe - e,g - LoadErrorEventArgs, FrameLoadStartEventArgs. 
+            </typeparam>
         </member>
-        <member name="M:Chromely.Core.Host.WebBrowserBase.Finalize">
+        <member name="M:Chromely.Core.Host.IChromelyWindow.RegisterCustomHandler(Chromely.Core.Helpers.CefHandlerKey,System.Type)">
             <summary>
-            Finalizes an instance of the <see cref="T:Chromely.Core.Host.WebBrowserBase"/> class. 
+            The register custom handler. 
+            The custom handler must be registered before calling "Run".
+            Alternatively this can be done before window is created during ChromelyConfiguration instantiation.
+            Only one type of custom handler can be registered. The first one is valid, consequent registrations will be ignored.
             </summary>
-        </member>
-        <member name="M:Chromely.Core.Host.WebBrowserBase.Dispose">
-            <summary>
-            The dispose method.
-            </summary>
-        </member>
-        <member name="M:Chromely.Core.Host.WebBrowserBase.Dispose(System.Boolean)">
-            <summary>
-            The dispose method - checks if disposing flag is set.
-            </summary>
-            <param name="disposing">
-            The disposing.
+            <param name="key">
+            The key.
+            </param>
+            <param name="implementation">
+            The implementation.
             </param>
         </member>
         <member name="T:Chromely.Core.Host.WebBrowserBaseExtension">
@@ -1129,158 +1584,24 @@
             The action.
             </param>
         </member>
-        <member name="T:Chromely.Core.Host.Win32Message">
+        <member name="T:Chromely.Core.Host.WindowState">
             <summary>
-            The win 32 message.
+            The window state.
             </summary>
         </member>
-        <member name="P:Chromely.Core.Host.Win32Message.Hwnd">
+        <member name="F:Chromely.Core.Host.WindowState.Normal">
             <summary>
-            Gets or sets the hwnd.
+            The normal.
             </summary>
         </member>
-        <member name="P:Chromely.Core.Host.Win32Message.Value">
+        <member name="F:Chromely.Core.Host.WindowState.Maximize">
             <summary>
-            Gets or sets the value.
+            The maximize.
             </summary>
         </member>
-        <member name="P:Chromely.Core.Host.Win32Message.WParam">
+        <member name="F:Chromely.Core.Host.WindowState.Fullscreen">
             <summary>
-            Gets or sets the w param.
-            </summary>
-        </member>
-        <member name="P:Chromely.Core.Host.Win32Message.LParam">
-            <summary>
-            Gets or sets the l param.
-            </summary>
-        </member>
-        <member name="P:Chromely.Core.Host.Win32Message.Time">
-            <summary>
-            Gets or sets the time.
-            </summary>
-        </member>
-        <member name="P:Chromely.Core.Host.Win32Message.Point">
-            <summary>
-            Gets or sets the point.
-            </summary>
-        </member>
-        <member name="T:Chromely.Core.Host.WinapiConstants">
-            <summary>
-            The winapi constants.
-            </summary>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.AsyncWindowPosition">
-            <summary>
-            If the calling thread and the thread that owns the window are attached to different input queues, 
-            the system posts the request to the thread that owns the window. This prevents the calling thread from 
-            blocking its execution while other threads process the request.
-            </summary>
-            <remarks>SWP_ASYNCWINDOWPOS</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.DeferErase">
-            <summary>
-            Prevents generation of the WM_SYNCPAINT message.
-            </summary>
-            <remarks>SWP_DEFERERASE</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.DrawFrame">
-            <summary>
-            Draws a frame (defined in the window's class description) around the window.
-            </summary>
-            <remarks>SWP_DRAWFRAME</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.FrameChanged">
-            <summary>
-            Applies new frame styles set using the SetWindowLong function. Sends a WM_NCCALCSIZE message to 
-            the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE 
-            is sent only when the window's size is being changed.
-            </summary>
-            <remarks>SWP_FRAMECHANGED</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.HideWindow">
-            <summary>
-            Hides the window.
-            </summary>
-            <remarks>SWP_HIDEWINDOW</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoActivate">
-            <summary>
-            Does not activate the window. If this flag is not set, the window is activated and moved to the 
-            top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter parameter).
-            </summary>
-            <remarks>SWP_NOACTIVATE</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoCopyBits">
-            <summary>
-            Discards the entire contents of the client area. If this flag is not specified, the valid contents 
-            of the client area are saved and copied back into the client area after the window is sized or repositioned.
-            </summary>
-            <remarks>SWP_NOCOPYBITS</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoMove">
-            <summary>
-            Retains the current position (ignores X and Y parameters).
-            </summary>
-            <remarks>SWP_NOMOVE</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoOwnerZOrder">
-            <summary>
-            Does not change the owner window's position in the Z order.
-            </summary>
-            <remarks>SWP_NOOWNERZORDER</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoRedraw">
-            <summary>
-            Does not redraw changes. If this flag is set, no repainting of any kind occurs. This applies to 
-            the client area, the nonclient area (including the title bar and scroll bars), and any part of the parent 
-            window uncovered as a result of the window being moved. When this flag is set, the application must 
-            explicitly invalidate or redraw any parts of the window and parent window that need redrawing.
-            </summary>
-            <remarks>SWP_NOREDRAW</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoReposition">
-            <summary>
-            Same as the SWP_NOOWNERZORDER flag.
-            </summary>
-            <remarks>SWP_NOREPOSITION</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoSendChanging">
-            <summary>
-            Prevents the window from receiving the WM_WINDOWPOSCHANGING message.
-            </summary>
-            <remarks>SWP_NOSENDCHANGING</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoSize">
-            <summary>
-            Retains the current size (ignores the cx and cy parameters).
-            </summary>
-            <remarks>SWP_NOSIZE</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.NoZOrder">
-            <summary>
-            Retains the current Z order (ignores the hWndInsertAfter parameter).
-            </summary>
-            <remarks>SWP_NOZORDER</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.ShowWindow">
-            <summary>
-            Displays the window.
-            </summary>
-            <remarks>SWP_SHOWWINDOW</remarks>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.WM_MOVE">
-            <summary>
-            The w m_ move
-            </summary>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.WM_MOVING">
-            <summary>
-            The w m_ moving
-            </summary>
-        </member>
-        <member name="F:Chromely.Core.Host.WinapiConstants.WM_ACTIVATE">
-            <summary>
-            The w m_ activate
+            The fullscreen.
             </summary>
         </member>
         <member name="T:Chromely.Core.IChromelyContainer">
@@ -1483,6 +1804,97 @@
             </param>
             <param name="message">
             The message.
+            </param>
+        </member>
+        <member name="T:Chromely.Core.IChromelyWebsocketHandler">
+            <summary>
+            The ChromelyWebsocketHandler interface.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.OnMessage(System.Int32,System.IntPtr,System.Int64)">
+            <summary>
+            The on message.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="data">
+            The data.
+            </param>
+            <param name="dataSize">
+            The data size.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.Send(System.Int32,System.IntPtr,System.Int64)">
+            <summary>
+            The send.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="data">
+            The data.
+            </param>
+            <param name="dataSize">
+            The data size.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.Send(System.Int32,System.String)">
+            <summary>
+            The send.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="data">
+            The data.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.Send(System.Int32,Chromely.Core.RestfulService.ChromelyResponse)">
+            <summary>
+            The send.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="response">
+            The response.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.Broadcast(System.Int32,System.IntPtr,System.Int64)">
+            <summary>
+            The broadcast.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="data">
+            The data.
+            </param>
+            <param name="dataSize">
+            The data size.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.Broadcast(System.Int32,System.String)">
+            <summary>
+            The broadcast.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="data">
+            The data.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.IChromelyWebsocketHandler.Broadcast(System.Int32,Chromely.Core.RestfulService.ChromelyResponse)">
+            <summary>
+            The broadcast.
+            </summary>
+            <param name="connectionId">
+            The connection id.
+            </param>
+            <param name="response">
+            The response.
             </param>
         </member>
         <member name="T:Chromely.Core.Infrastructure.IoC">
@@ -1835,9 +2247,9 @@
             The new route dictionary.
             </param>
         </member>
-        <member name="M:Chromely.Core.Infrastructure.ServiceRouteProvider.GetRoute(System.String)">
+        <member name="M:Chromely.Core.Infrastructure.ServiceRouteProvider.GetRoute(Chromely.Core.RestfulService.RoutePath)">
             <summary>
-            Gets route.
+            The get route.
             </summary>
             <param name="routePath">
             The route path.
@@ -2119,6 +2531,17 @@
             Gets or sets a value indicating whether is external.
             </summary>
         </member>
+        <member name="M:Chromely.Core.Infrastructure.UrlScheme.IsStandardScheme(System.String)">
+            <summary>
+            Check if scheme is a standard type.
+            </summary>
+            <param name="scheme">
+            The scheme.
+            </param>
+            <returns>
+            The <see cref="T:System.Boolean"/>.
+            </returns>
+        </member>
         <member name="M:Chromely.Core.Infrastructure.UrlScheme.IsUrlOfSameScheme(System.String)">
             <summary>
             Checks if url is of same scheme as the object url.
@@ -2195,7 +2618,7 @@
             Gets the route name.
             </summary>
         </member>
-        <member name="P:Chromely.Core.RestfulService.ChromelyController.RoutePath">
+        <member name="P:Chromely.Core.RestfulService.ChromelyController.Path">
             <summary>
             Gets the route path.
             </summary>
@@ -2288,10 +2711,27 @@
             The action.
             </param>
         </member>
-        <member name="M:Chromely.Core.RestfulService.ChromelyController.AddRoute(System.String,Chromely.Core.RestfulService.Route)">
+        <member name="M:Chromely.Core.RestfulService.ChromelyController.AddRoute(Chromely.Core.RestfulService.Method,System.String,Chromely.Core.RestfulService.Route)">
             <summary>
             The add route.
             </summary>
+            <param name="method">
+            The method.
+            </param>
+            <param name="path">
+            The path.
+            </param>
+            <param name="route">
+            The route.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.ChromelyController.AddRoute(System.String,System.String,Chromely.Core.RestfulService.Route)">
+            <summary>
+            The add route.
+            </summary>
+            <param name="method">
+            The method.
+            </param>
             <param name="path">
             The path.
             </param>
@@ -2312,7 +2752,7 @@
             The chromely request.
             </summary>
         </member>
-        <member name="M:Chromely.Core.RestfulService.ChromelyRequest.#ctor(System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Object)">
+        <member name="M:Chromely.Core.RestfulService.ChromelyRequest.#ctor(Chromely.Core.RestfulService.RoutePath,System.Collections.Generic.IDictionary{System.String,System.Object},System.Object)">
             <summary>
             Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.ChromelyRequest"/> class.
             </summary>
@@ -2325,6 +2765,36 @@
             <param name="postData">
             The post data.
             </param>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.ChromelyRequest.#ctor(System.String,Chromely.Core.RestfulService.RoutePath,System.Collections.Generic.IDictionary{System.String,System.Object},System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.ChromelyRequest"/> class.
+            </summary>
+            <param name="id">
+            The id.
+            </param>
+            <param name="routePath">
+            The route path.
+            </param>
+            <param name="parameters">
+            The parameters.
+            </param>
+            <param name="postData">
+            The post data.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.ChromelyRequest.#ctor(LitJson.JsonData)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.ChromelyRequest"/> class.
+            </summary>
+            <param name="jsonData">
+            The json data.
+            </param>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.ChromelyRequest.Id">
+            <summary>
+            Gets or sets the id.
+            </summary>
         </member>
         <member name="P:Chromely.Core.RestfulService.ChromelyRequest.RoutePath">
             <summary>
@@ -2346,6 +2816,24 @@
             The chromely response.
             </summary>
         </member>
+        <member name="M:Chromely.Core.RestfulService.ChromelyResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.ChromelyResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.ChromelyResponse.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.ChromelyResponse"/> class.
+            </summary>
+            <param name="requestId">
+            The request id.
+            </param>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.ChromelyResponse.RequestId">
+            <summary>
+            Gets or sets the route path.
+            </summary>
+        </member>
         <member name="P:Chromely.Core.RestfulService.ChromelyResponse.ReadyState">
             <summary>
             Gets or sets the ready state.
@@ -2364,6 +2852,34 @@
         <member name="P:Chromely.Core.RestfulService.ChromelyResponse.Data">
             <summary>
             Gets or sets the data.
+            </summary>
+        </member>
+        <member name="T:Chromely.Core.RestfulService.ControllerAssemblyInfo">
+            <summary>
+            The controller assembly info.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.ControllerAssemblyInfo.#ctor(System.Reflection.Assembly)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.ControllerAssemblyInfo"/> class.
+            </summary>
+            <param name="assembly">
+            The assembly.
+            </param>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.ControllerAssemblyInfo.Assembly">
+            <summary>
+            Gets or sets the assembly.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.ControllerAssemblyInfo.IsScanned">
+            <summary>
+            Gets or sets a value indicating whether is scanned.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.ControllerAssemblyInfo.Key">
+            <summary>
+            Gets the key.
             </summary>
         </member>
         <member name="T:Chromely.Core.RestfulService.ControllerPropertyAttribute">
@@ -2455,6 +2971,17 @@
             The <see cref="T:System.Collections.IDictionary"/>.
             </returns>
         </member>
+        <member name="M:Chromely.Core.RestfulService.ExtensionMethods.GetParameters(System.String)">
+            <summary>
+            The get parameters.
+            </summary>
+            <param name="url">
+            The url.
+            </param>
+            <returns>
+            The name value collection.
+            </returns>
+        </member>
         <member name="M:Chromely.Core.RestfulService.ExtensionMethods.IsOfType``1(System.Object)">
             <summary>
             The is of type.
@@ -2472,11 +2999,6 @@
         <member name="T:Chromely.Core.RestfulService.IChromelyServiceProvider">
             <summary>
             The ChromelyServiceProvider interface.
-            </summary>
-        </member>
-        <member name="P:Chromely.Core.RestfulService.IChromelyServiceProvider.ServiceAssemblies">
-            <summary>
-            Gets the service assemblies.
             </summary>
         </member>
         <member name="M:Chromely.Core.RestfulService.IChromelyServiceProvider.RegisterUrlScheme(Chromely.Core.Infrastructure.UrlScheme)">
@@ -2609,7 +3131,7 @@
             The registration of service assemblies extension.
             </summary>
         </member>
-        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssembly(System.Collections.Generic.List{System.Reflection.Assembly},System.String)">
+        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssembly(System.Collections.Generic.List{Chromely.Core.RestfulService.ControllerAssemblyInfo},System.String)">
             <summary>
             Registers service assembly.
             </summary>
@@ -2620,7 +3142,7 @@
             The filename.
             </param>
         </member>
-        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssemblies(System.Collections.Generic.List{System.Reflection.Assembly},System.Collections.Generic.List{System.String})">
+        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssemblies(System.Collections.Generic.List{Chromely.Core.RestfulService.ControllerAssemblyInfo},System.Collections.Generic.List{System.String})">
             <summary>
             Registers service assemblies.
             </summary>
@@ -2631,7 +3153,7 @@
             The filenames.
             </param>
         </member>
-        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssemblies(System.Collections.Generic.List{System.Reflection.Assembly},System.String)">
+        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssemblies(System.Collections.Generic.List{Chromely.Core.RestfulService.ControllerAssemblyInfo},System.String)">
             <summary>
             Registers service assemblies.
             </summary>
@@ -2642,7 +3164,7 @@
             The folder path.
             </param>
         </member>
-        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssembly(System.Collections.Generic.List{System.Reflection.Assembly},System.Reflection.Assembly)">
+        <member name="M:Chromely.Core.RestfulService.RegisterServiceAssembliesExtension.RegisterServiceAssembly(System.Collections.Generic.List{Chromely.Core.RestfulService.ControllerAssemblyInfo},System.Reflection.Assembly)">
             <summary>
             Registers service assembly.
             </summary>
@@ -2687,10 +3209,18 @@
             Gets or sets the action.
             </summary>
         </member>
-        <member name="M:Chromely.Core.RestfulService.Route.Invoke(System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Object)">
+        <member name="P:Chromely.Core.RestfulService.Route.ActionAsync">
+            <summary>
+            Gets or sets the action async.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.Route.Invoke(System.String,Chromely.Core.RestfulService.RoutePath,System.Collections.Generic.IDictionary{System.String,System.Object},System.Object)">
             <summary>
             Invokes the registered action.
             </summary>
+            <param name="requestId">
+            The request identifier.
+            </param>
             <param name="routePath">
             The route path.
             </param>
@@ -2713,6 +3243,81 @@
             </param>
             <returns>
             The <see cref="T:Chromely.Core.RestfulService.ChromelyResponse"/>.
+            </returns>
+        </member>
+        <member name="T:Chromely.Core.RestfulService.RoutePath">
+            <summary>
+            The route path.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.RoutePath.#ctor(Chromely.Core.RestfulService.Method,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.RoutePath"/> class.
+            </summary>
+            <param name="method">
+            The method.
+            </param>
+            <param name="path">
+            The path.
+            </param>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.RoutePath.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Chromely.Core.RestfulService.RoutePath"/> class.
+            </summary>
+            <param name="method">
+            The method.
+            </param>
+            <param name="path">
+            The path.
+            </param>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.RoutePath.Key">
+            <summary>
+            Gets the key.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.RoutePath.Method">
+            <summary>
+            Gets or sets the method.
+            </summary>
+        </member>
+        <member name="P:Chromely.Core.RestfulService.RoutePath.Path">
+            <summary>
+            Gets or sets the path.
+            </summary>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.RoutePath.ValidMethod(Chromely.Core.RestfulService.Method)">
+            <summary>
+            The valid method.
+            </summary>
+            <param name="method">
+            The method.
+            </param>
+            <returns>
+            The <see cref="T:System.Boolean"/>.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.RoutePath.ValidMethod(System.String)">
+            <summary>
+            The valid method.
+            </summary>
+            <param name="method">
+            The method.
+            </param>
+            <returns>
+            The <see cref="T:System.Boolean"/>.
+            </returns>
+        </member>
+        <member name="M:Chromely.Core.RestfulService.RoutePath.ConvertMethod(Chromely.Core.RestfulService.Method)">
+            <summary>
+            The convert method.
+            </summary>
+            <param name="method">
+            The method.
+            </param>
+            <returns>
+            The <see cref="T:System.String"/>.
             </returns>
         </member>
         <member name="T:Chromely.Core.RestfulService.RouteScanner">

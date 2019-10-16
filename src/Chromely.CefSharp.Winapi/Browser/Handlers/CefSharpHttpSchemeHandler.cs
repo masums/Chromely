@@ -1,46 +1,24 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CefSharpHttpSchemeHandler.cs" company="Chromely">
-//   Copyright (c) 2017-2018 Kola Oyewumi
+// <copyright file="CefSharpHttpSchemeHandler.cs" company="Chromely Projects">
+//   Copyright (c) 2017-2019 Chromely Projects
 // </copyright>
 // <license>
-// MIT License
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+//      See the LICENSE.md file in the project root for more information.
 // </license>
-// <note>
-// Chromely project is licensed under MIT License. CefGlue, CefSharp, Winapi may have additional licensing.
-// </note>
-// --------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable StyleCop.SA1210
+using System;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using global::CefSharp;
+using Chromely.CefSharp.Winapi.RestfulService;
+using Chromely.Core.Infrastructure;
+using Chromely.Core.RestfulService;
+
 namespace Chromely.CefSharp.Winapi.Browser.Handlers
 {
-    using System;
-    using System.IO;
-    using System.Net;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Chromely.CefSharp.Winapi.RestfulService;
-    using Chromely.Core.Infrastructure;
-    using Chromely.Core.RestfulService;
-    using global::CefSharp;
-
     /// <summary>
     /// The CefSharp http scheme handler.
     /// </summary>
@@ -49,17 +27,17 @@ namespace Chromely.CefSharp.Winapi.Browser.Handlers
         /// <summary>
         /// The ChromelyResponse object.
         /// </summary>
-        private ChromelyResponse mChromelyResponse;
+        private ChromelyResponse _chromelyResponse;
 
         /// <summary>
         /// The mime type.
         /// </summary>
-        private string mMimeType;
+        private string _mimeType;
 
         /// <summary>
         /// The stream object.
         /// </summary>
-        private Stream mStream = new MemoryStream();
+        private Stream _stream = new MemoryStream();
 
         /// <summary>
         /// The process request async.
@@ -78,24 +56,24 @@ namespace Chromely.CefSharp.Winapi.Browser.Handlers
             bool isCustomScheme = UrlSchemeProvider.IsUrlOfRegisteredCustomScheme(request.Url);
             if (isCustomScheme)
             {
-                Task.Factory.StartNew(() =>
+                Task.Run(() =>
                 {
                     using (callback)
                     {
                         try
                         {
-                            this.mChromelyResponse = RequestTaskRunner.Run(request);
+                            _chromelyResponse = RequestTaskRunner.Run(request);
 
-                            string jsonData = this.mChromelyResponse.Data.EnsureResponseIsJsonFormat();
+                            string jsonData = _chromelyResponse.Data.EnsureResponseIsJsonFormat();
                             var content = Encoding.UTF8.GetBytes(jsonData);
-                            this.mStream.Write(content, 0, content.Length);
-                            this.mMimeType = "application/json";
+                            _stream.Write(content, 0, content.Length);
+                            _mimeType = "application/json";
                         }
                         catch (Exception exception)
                         {
                             Log.Error(exception);
 
-                            this.mChromelyResponse =
+                            _chromelyResponse =
                                 new ChromelyResponse
                                     {
                                         Status = (int)HttpStatusCode.BadRequest,
@@ -134,22 +112,22 @@ namespace Chromely.CefSharp.Winapi.Browser.Handlers
         /// </returns>
         public override Stream GetResponse(IResponse response, out long responseLength, out string redirectUrl)
         {
-            responseLength = this.mStream.Length;
+            responseLength = _stream.Length;
             redirectUrl = null;
 
-            var headers = response.ResponseHeaders;
+            var headers = response.Headers;
             headers.Add("Cache-Control", "private");
             headers.Add("Access-Control-Allow-Origin", "*");
             headers.Add("Access-Control-Allow-Methods", "GET,POST");
             headers.Add("Access-Control-Allow-Headers", "Content-Type");
             headers.Add("Content-Type", "application/json; charset=utf-8");
-            response.ResponseHeaders = headers;
+            response.Headers = headers;
 
-            response.StatusCode = this.mChromelyResponse.Status;
-            response.StatusText = this.mChromelyResponse.StatusText;
-            response.MimeType = this.mMimeType; 
+            response.StatusCode = _chromelyResponse.Status;
+            response.StatusText = _chromelyResponse.StatusText;
+            response.MimeType = _mimeType; 
 
-            return this.mStream;
+            return _stream;
         }
     }
 }
